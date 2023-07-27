@@ -26,8 +26,12 @@ export const PUT = async (
   request: Request,
   { params: { categoryId } }: Context
 ): Promise<Response> => {
-  const { name, pictures } = await request.json();
-  const category = await Category.updateCategory(categoryId, name, pictures);
+  const { name, picture } = await request.json();
+  const category = await Category.updateCategory({
+    id: categoryId,
+    name,
+    picture,
+  });
   if (category instanceof ServerError) {
     const response = new Response(category.message, {
       status: category.status,

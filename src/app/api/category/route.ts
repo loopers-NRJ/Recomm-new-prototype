@@ -14,8 +14,8 @@ export const GET = async (): Promise<Response> => {
 };
 
 export const POST = async (request: Request): Promise<Response> => {
-  const { name, pictures } = await request.json();
-  const category = await Category.createCategory(name, pictures);
+  const { name, picture } = await request.json();
+  const category = await Category.createCategory({ name, picture });
   if (category instanceof ServerError) {
     const response = new Response(category.message, {
       status: category.status,

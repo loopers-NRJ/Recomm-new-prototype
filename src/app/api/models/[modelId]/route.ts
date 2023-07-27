@@ -26,8 +26,12 @@ export const PUT = async (
   request: Request,
   { params: { modelId } }: Context
 ): Promise<Response> => {
-  const { name, categoryId } = await request.json();
-  const model = await Models.updateModel(modelId, name, categoryId);
+  const { name, categoryIds } = await request.json();
+  const model = await Models.updateModel({
+    id: modelId,
+    name,
+    categoryIds,
+  });
   if (model instanceof ServerError) {
     const response = new Response(model.message, {
       status: model.status,

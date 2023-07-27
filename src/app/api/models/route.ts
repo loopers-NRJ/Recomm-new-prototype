@@ -14,8 +14,8 @@ export const GET = async (request: Request): Promise<Response> => {
 };
 
 export const POST = async (request: Request): Promise<Response> => {
-  const { name, categoryId, brandId } = await request.json();
-  const model = await Models.createModel(name, brandId, categoryId);
+  const { name, categoryIds, brandId } = await request.json();
+  const model = await Models.createModel({ name, brandId, categoryIds });
   if (model instanceof ServerError) {
     const response = new Response(model.message, {
       status: model.status,

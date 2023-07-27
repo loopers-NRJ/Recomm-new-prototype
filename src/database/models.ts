@@ -80,12 +80,12 @@ export const createModel = async ({
 interface UpdateModelProps {
   id: string;
   name?: string;
-  categories?: string[];
+  categoryIds?: string[];
 }
 export const updateModel = async ({
   id,
   name,
-  categories,
+  categoryIds: categories,
 }: UpdateModelProps): Promise<Model | ServerError> => {
   try {
     if (categories != null) {
