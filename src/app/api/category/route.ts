@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import * as Category from "@/database/category";
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
 
 export const GET = async (): Promise<Response> => {
   const categories = await Category.getCategories();

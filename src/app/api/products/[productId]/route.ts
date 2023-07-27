@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import * as Products from "@/database/products";
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
 
 export interface Context {
   params: {

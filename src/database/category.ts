@@ -1,10 +1,20 @@
 import type { Brand, Category, Model, Product } from "@prisma/client";
 import client from "./client";
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
+import { idValidator } from "@/validation/objectId";
+import {
+  type CreateCategoryProps,
+  type UpdateCategoryProps,
+  updateCategoryValidator,
+} from "@/validation/category";
 
 export const getCategory = async (
   id: string
 ): Promise<Category | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const category = await client.category.findUnique({
       where: {
@@ -30,14 +40,14 @@ export const getCategories = async (): Promise<Category[] | ServerError> => {
   }
 };
 
-interface CreateCategoryProps {
-  name: string;
-  picture: string;
-}
 export const createCategory = async ({
   name,
   picture,
 }: CreateCategoryProps): Promise<Category | ServerError> => {
+  const { error } = idValidator.validate(name);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const category = await client.category.create({
       data: {
@@ -51,16 +61,15 @@ export const createCategory = async ({
   }
 };
 
-interface UpdateCategoryProps {
-  id: string;
-  name?: string;
-  picture?: string;
-}
 export const updateCategory = async ({
   id,
   name,
   picture,
 }: UpdateCategoryProps): Promise<Category | ServerError> => {
+  const { error } = updateCategoryValidator.validate({ id, name, picture });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const category = await client.category.update({
       where: {
@@ -80,6 +89,10 @@ export const updateCategory = async ({
 export const deleteCategory = async (
   id: string
 ): Promise<Category | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const category = await client.category.delete({
       where: {
@@ -97,6 +110,10 @@ export const deleteCategory = async (
 export const getModelsByCategory = async (
   id: string
 ): Promise<Model[] | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const models = await client.model.findMany({
       where: {
@@ -115,6 +132,10 @@ export const getModelsByCategory = async (
 export const getBrandsByCategory = async (
   id: string
 ): Promise<Brand[] | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const brands = await client.brand.findMany({
       where: {
@@ -138,6 +159,10 @@ export const getBrandsByCategory = async (
 export const getProductsByCategory = async (
   id: string
 ): Promise<Product[] | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const products = await client.product.findMany({
       where: {

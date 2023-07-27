@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
 import * as Category from "@/database/category";
 
 export interface Context {

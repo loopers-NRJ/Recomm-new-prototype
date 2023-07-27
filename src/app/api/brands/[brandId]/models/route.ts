@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
 import * as Brands from "@/database/brands";
-import type { Context } from "./route";
+import type { Context } from "../route";
 
 export const GET = async (
   _: Request,

@@ -1,27 +1,34 @@
-import bcrypt from "bcryptjs";
-
-import type { Product, User } from "@prisma/client";
+import { type Product, type User } from "@prisma/client";
 import client from "./client";
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
+import {
+  type SignupProps,
+  signupValidator,
+  getProviderVarient,
+} from "@/validation/user";
+import { idValidator } from "@/validation/objectId";
 
-interface CreateUserProps {
-  email: string;
-  name: string;
-  password: string;
-}
-export const createUser = async ({
+export const signup = async ({
   email,
   name,
-  password,
-}: CreateUserProps): Promise<User | ServerError> => {
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+  provider: providerString,
+}: SignupProps): Promise<User | ServerError> => {
+  const { error } = signupValidator.validate({
+    email,
+    name,
+    provider: providerString,
+  });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+  const provider = getProviderVarient(providerString);
 
+  try {
     const user = await client.user.create({
       data: {
         email,
-        password: hashedPassword,
         name,
+        provider,
       },
     });
     return user;
@@ -33,6 +40,10 @@ export const createUser = async ({
 export const getMyListings = async (
   userId: string
 ): Promise<Product[] | ServerError> => {
+  const { error } = idValidator.validate({ id: userId });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const listings = await client.product.findMany({
       where: {
@@ -53,29 +64,6 @@ export const getMyListings = async (
   }
 };
 
-export const getUser = async (
-  email: string,
-  password: string
-): Promise<User | ServerError> => {
-  try {
-    const user = await client.user.findUnique({
-      where: {
-        email,
-      },
-    });
-    if (user == null) {
-      return new ServerError("User not found", 404);
-    }
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return new ServerError("Incorrect password", 400);
-    }
-    return user;
-  } catch (error) {
-    return new ServerError(`Cannot find user with email: ${email}`);
-  }
-};
-
 // TODO: Implement search sort and pagination functionality
 export const getProductsByUser = async (
   userId: string
@@ -89,5 +77,34 @@ export const getProductsByUser = async (
     return products;
   } catch (error) {
     return new ServerError(`Cannot get the product with user id: ${userId}`);
+  }
+};
+
+// TODO: Implement search sort and pagination functionality
+export const searchUsers = async (
+  query: string
+): Promise<User[] | ServerError> => {
+  try {
+    const users = await client.user.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+          {
+            email: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    });
+    return users;
+  } catch (error) {
+    return new ServerError(`Cannot search users with query: ${query}`);
   }
 };

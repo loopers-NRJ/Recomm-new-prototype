@@ -1,8 +1,18 @@
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
 import client from "./client";
 import type { Brand, Model, Product } from "@prisma/client";
+import {
+  type UpdateBrandProps,
+  type CreateBrandProps,
+} from "@/validation/brand";
+import { createModelValidator, updateModelValidator } from "@/validation/model";
+import { idValidator } from "@/validation/objectId";
 
 export const getBrand = async (id: string): Promise<Brand | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const brand = await client.brand.findUnique({
       where: {
@@ -28,12 +38,13 @@ export const getBrands = async (): Promise<Brand[] | ServerError> => {
   }
 };
 
-interface CreateBrandProps {
-  name: string;
-}
 export const createBrand = async ({
   name,
 }: CreateBrandProps): Promise<Brand | ServerError> => {
+  const { error } = createModelValidator.validate({ name });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const brand = await client.brand.create({
       data: {
@@ -46,14 +57,14 @@ export const createBrand = async ({
   }
 };
 
-interface UpdateBrandProps {
-  id: string;
-  name?: string;
-}
 export const updateBrand = async ({
   id,
   name,
 }: UpdateBrandProps): Promise<Brand | ServerError> => {
+  const { error } = updateModelValidator.validate({ id, name });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const brand = await client.brand.update({
       where: {
@@ -70,6 +81,10 @@ export const updateBrand = async ({
 };
 
 export const deleteBrand = async (id: string): Promise<Brand | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const brand = await client.brand.delete({
       where: {
@@ -84,19 +99,22 @@ export const deleteBrand = async (id: string): Promise<Brand | ServerError> => {
 
 // TODO: Implement search sort and pagination functionality
 export const getModelsByBrand = async (
-  brandId: string
+  id: string
 ): Promise<Model[] | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+
   try {
     const models = await client.model.findMany({
       where: {
-        brandId,
+        brandId: id,
       },
     });
     return models;
   } catch (error) {
-    return new ServerError(
-      `Cannot get the models of brand with id: ${brandId}`
-    );
+    return new ServerError(`Cannot get the models of brand with id: ${id}`);
   }
 };
 
@@ -104,6 +122,11 @@ export const getModelsByBrand = async (
 export const getProductsByBrand = async (
   id: string
 ): Promise<Product[] | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+
   try {
     const products = await client.product.findMany({
       where: {

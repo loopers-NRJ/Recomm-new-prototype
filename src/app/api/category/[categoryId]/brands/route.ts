@@ -1,8 +1,8 @@
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
 import { NextResponse } from "next/server";
 import * as Category from "@/database/category";
 
-import type { Context } from "./route";
+import type { Context } from "../route";
 
 export const GET = async (
   _: Request,

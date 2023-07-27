@@ -1,13 +1,14 @@
+import { ServerError } from "@/lib/error";
 import { NextResponse } from "next/server";
-import { ServerError } from "@/util/error";
-import * as Brands from "@/database/brands";
-import type { Context } from "./route";
+import * as Category from "@/database/category";
+
+import type { Context } from "../route";
 
 export const GET = async (
   _: Request,
-  { params: { brandId } }: Context
+  { params: { categoryId } }: Context
 ): Promise<Response> => {
-  const products = await Brands.getProductsByBrand(brandId);
+  const products = await Category.getProductsByCategory(categoryId);
   if (products instanceof ServerError) {
     const response = new Response(products.message, {
       status: products.status,

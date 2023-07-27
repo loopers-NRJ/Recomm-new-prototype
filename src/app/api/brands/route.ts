@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import * as Brand from "@/database/brands";
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
 
 export const GET = async (request: Request): Promise<Response> => {
   const brand = await Brand.getBrands();

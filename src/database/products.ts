@@ -1,11 +1,22 @@
 import type { Product } from "@prisma/client";
 import client from "./client";
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
+import {
+  type CreateProductProps,
+  type UpdateProductProps,
+  createProductValidator,
+  updateProductValidator,
+} from "@/validation/product";
+import { idValidator } from "@/validation/objectId";
 
 export const getProduct = async (
   id: string
 ): Promise<Product | ServerError> => {
   try {
+    const { error } = idValidator.validate(id);
+    if (error != null) {
+      return new ServerError(error.message, 400);
+    }
     const product = await client.product.findUnique({
       where: { id },
       include: {
@@ -35,13 +46,6 @@ export const getProducts = async (): Promise<Product[] | ServerError> => {
   }
 };
 
-interface CreateProductProps {
-  userId: string;
-  modelId: string;
-  price: number;
-  description: string;
-  images: string[];
-}
 export const createProduct = async ({
   userId,
   modelId,
@@ -49,6 +53,16 @@ export const createProduct = async ({
   description,
   images,
 }: CreateProductProps): Promise<Product | ServerError> => {
+  const { error } = createProductValidator.validate({
+    userId,
+    modelId,
+    price,
+    description,
+    images,
+  });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const model = await client.model.findUnique({
       where: {
@@ -84,17 +98,15 @@ export const createProduct = async ({
   }
 };
 
-interface UpdateProductProps {
-  id: string;
-  price?: number;
-  description?: string;
-  images?: string[];
-}
 export const updateProduct = async ({
   id,
   price,
   images,
 }: UpdateProductProps): Promise<Product | ServerError> => {
+  const { error } = updateProductValidator.validate({ id, price, images });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const product = await client.product.update({
       where: {
@@ -114,6 +126,10 @@ export const updateProduct = async ({
 export const deleteProduct = async (
   id: string
 ): Promise<Product | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
   try {
     const product = await client.product.delete({
       where: {

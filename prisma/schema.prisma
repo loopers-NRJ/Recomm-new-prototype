@@ -10,11 +10,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Provider {
+  Google
+}
+
 model User {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   email       String    @unique
   name        String
-  password    String
+  provider    Provider
   myListings  Product[] @relation(name: "UserListings")
   myFavorites Product[] @relation(name: "UserFavorites")
   createdAt   DateTime  @default(now())

@@ -1,8 +1,20 @@
 import type { Model, Product } from "@prisma/client";
 import client from "./client";
-import { ServerError } from "@/util/error";
+import { ServerError } from "@/lib/error";
+import {
+  type UpdateModelProps,
+  type CreateModelProps,
+  createModelValidator,
+  updateModelValidator,
+} from "@/validation/model";
+import { idValidator } from "@/validation/objectId";
 
 export const getModel = async (id: string): Promise<Model | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+
   try {
     const model = await client.model.findUnique({
       where: {
@@ -28,16 +40,20 @@ export const getModels = async (): Promise<Model[] | ServerError> => {
   }
 };
 
-interface CreateModelProps {
-  name: string;
-  brandId: string;
-  categoryIds: string[];
-}
 export const createModel = async ({
   name,
   brandId,
   categoryIds,
 }: CreateModelProps): Promise<Model | ServerError> => {
+  const { error } = createModelValidator.validate({
+    name,
+    brandId,
+    categoryIds,
+  });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+
   try {
     const categories = await client.category.findMany({
       where: {
@@ -77,26 +93,30 @@ export const createModel = async ({
   }
 };
 
-interface UpdateModelProps {
-  id: string;
-  name?: string;
-  categoryIds?: string[];
-}
 export const updateModel = async ({
   id,
   name,
-  categoryIds: categories,
+  categoryIds,
 }: UpdateModelProps): Promise<Model | ServerError> => {
+  const { error } = updateModelValidator.validate({
+    id,
+    name,
+    categoryIds,
+  });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+
   try {
-    if (categories != null) {
+    if (categoryIds != null) {
       const category = await client.category.findMany({
         where: {
           id: {
-            in: categories,
+            in: categoryIds,
           },
         },
       });
-      categories = category.map((c) => c.id);
+      categoryIds = category.map((c) => c.id);
     }
     const model = await client.model.update({
       where: {
@@ -105,7 +125,7 @@ export const updateModel = async ({
       data: {
         name,
         categories: {
-          set: categories?.map((id) => ({ id })),
+          set: categoryIds?.map((id) => ({ id })),
         },
       },
     });
@@ -117,6 +137,11 @@ export const updateModel = async ({
 };
 
 export const deleteModel = async (id: string): Promise<Model | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+
   try {
     const model = await client.model.delete({
       where: {
@@ -133,6 +158,11 @@ export const deleteModel = async (id: string): Promise<Model | ServerError> => {
 export const getProductsByModel = async (
   id: string
 ): Promise<Product[] | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+
   try {
     const products = await client.product.findMany({
       where: {
