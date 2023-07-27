@@ -28,9 +28,12 @@ export const getBrands = async (): Promise<Brand[] | ServerError> => {
   }
 };
 
-export const createBrand = async (
-  name: string
-): Promise<Brand | ServerError> => {
+interface CreateBrandProps {
+  name: string;
+}
+export const createBrand = async ({
+  name,
+}: CreateBrandProps): Promise<Brand | ServerError> => {
   try {
     const brand = await client.brand.create({
       data: {
@@ -43,10 +46,14 @@ export const createBrand = async (
   }
 };
 
-export const updateBrand = async (
-  id: string,
-  name: string
-): Promise<Brand | ServerError> => {
+interface UpdateBrandProps {
+  id: string;
+  name?: string;
+}
+export const updateBrand = async ({
+  id,
+  name,
+}: UpdateBrandProps): Promise<Brand | ServerError> => {
   try {
     const brand = await client.brand.update({
       where: {
@@ -108,7 +115,7 @@ export const getProductsByBrand = async (
         model: {
           include: {
             brand: true,
-            category: true,
+            categories: true,
           },
         },
       },

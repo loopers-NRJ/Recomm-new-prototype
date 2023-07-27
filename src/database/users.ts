@@ -4,11 +4,16 @@ import type { Product, User } from "@prisma/client";
 import client from "./client";
 import { ServerError } from "@/util/error";
 
-export const createUser = async (
-  email: string,
-  name: string,
-  password: string
-): Promise<User | ServerError> => {
+interface CreateUserProps {
+  email: string;
+  name: string;
+  password: string;
+}
+export const createUser = async ({
+  email,
+  name,
+  password,
+}: CreateUserProps): Promise<User | ServerError> => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -37,7 +42,7 @@ export const getMyListings = async (
         model: {
           include: {
             brand: true,
-            category: true,
+            categories: true,
           },
         },
       },

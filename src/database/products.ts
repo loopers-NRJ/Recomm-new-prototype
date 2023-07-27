@@ -35,12 +35,20 @@ export const getProducts = async (): Promise<Product[] | ServerError> => {
   }
 };
 
-export const createProduct = async (
-  userId: string,
-  modelId: string,
-  price: number,
-  images: string[]
-): Promise<Product | ServerError> => {
+interface CreateProductProps {
+  userId: string;
+  modelId: string;
+  price: number;
+  description: string;
+  images: string[];
+}
+export const createProduct = async ({
+  userId,
+  modelId,
+  price,
+  description,
+  images,
+}: CreateProductProps): Promise<Product | ServerError> => {
   try {
     const model = await client.model.findUnique({
       where: {
@@ -64,6 +72,7 @@ export const createProduct = async (
           },
         },
         price,
+        description,
         pictures: images,
       },
     });
@@ -75,11 +84,17 @@ export const createProduct = async (
   }
 };
 
-export const updateProduct = async (
-  id: string,
-  price?: number,
-  images?: string[]
-): Promise<Product | ServerError> => {
+interface UpdateProductProps {
+  id: string;
+  price?: number;
+  description?: string;
+  images?: string[];
+}
+export const updateProduct = async ({
+  id,
+  price,
+  images,
+}: UpdateProductProps): Promise<Product | ServerError> => {
   try {
     const product = await client.product.update({
       where: {

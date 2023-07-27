@@ -26,6 +26,7 @@ model Product {
   model       Model    @relation(fields: [modelId], references: [id])
   modelId     String   @db.ObjectId
   price       Float
+  description String
   pictures    String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -43,15 +44,15 @@ model Brand {
 }
 
 model Model {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  name       String    @unique
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  brand      Brand     @relation(fields: [brandId], references: [id])
-  brandId    String    @db.ObjectId
-  products   Product[]
-  category   Category  @relation(fields: [categoryId], references: [id])
-  categoryId String    @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String     @unique
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  brand       Brand      @relation(fields: [brandId], references: [id])
+  brandId     String     @db.ObjectId
+  products    Product[]
+  categoryIds String[]   @db.ObjectId
+  categories  Category[] @relation(fields: [categoryIds], references: [id])
 }
 
 model Category {
@@ -60,5 +61,6 @@ model Category {
   picture   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  models    Model[]
+  modelIds  String[] @db.ObjectId
+  models    Model[]  @relation(fields: [modelIds], references: [id])
 }

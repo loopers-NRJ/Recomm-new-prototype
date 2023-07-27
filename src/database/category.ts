@@ -30,10 +30,14 @@ export const getCategories = async (): Promise<Category[] | ServerError> => {
   }
 };
 
-export const createCategory = async (
-  name: string,
-  picture: string
-): Promise<Category | ServerError> => {
+interface CreateCategoryProps {
+  name: string;
+  picture: string;
+}
+export const createCategory = async ({
+  name,
+  picture,
+}: CreateCategoryProps): Promise<Category | ServerError> => {
   try {
     const category = await client.category.create({
       data: {
@@ -47,11 +51,16 @@ export const createCategory = async (
   }
 };
 
-export const updateCategory = async (
-  id: string,
-  name?: string,
-  picture?: string
-): Promise<Category | ServerError> => {
+interface UpdateCategoryProps {
+  id: string;
+  name?: string;
+  picture?: string;
+}
+export const updateCategory = async ({
+  id,
+  name,
+  picture,
+}: UpdateCategoryProps): Promise<Category | ServerError> => {
   try {
     const category = await client.category.update({
       where: {
@@ -91,7 +100,9 @@ export const getModelsByCategory = async (
   try {
     const models = await client.model.findMany({
       where: {
-        categoryId: id,
+        categoryIds: {
+          has: id,
+        },
       },
     });
     return models;
@@ -109,7 +120,9 @@ export const getBrandsByCategory = async (
       where: {
         models: {
           some: {
-            categoryId: id,
+            categoryIds: {
+              has: id,
+            },
           },
         },
       },
@@ -129,14 +142,16 @@ export const getProductsByCategory = async (
     const products = await client.product.findMany({
       where: {
         model: {
-          categoryId: id,
+          categoryIds: {
+            has: id,
+          },
         },
       },
       include: {
         model: {
           include: {
             brand: true,
-            category: true,
+            categories: true,
           },
         },
       },

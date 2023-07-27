@@ -28,18 +28,25 @@ export const getModels = async (): Promise<Model[] | ServerError> => {
   }
 };
 
-export const createModel = async (
-  name: string,
-  brandId: string,
-  categoryId: string
-): Promise<Model | ServerError> => {
+interface CreateModelProps {
+  name: string;
+  brandId: string;
+  categoryIds: string[];
+}
+export const createModel = async ({
+  name,
+  brandId,
+  categoryIds,
+}: CreateModelProps): Promise<Model | ServerError> => {
   try {
-    const category = await client.category.findUnique({
+    const categories = await client.category.findMany({
       where: {
-        id: categoryId,
+        id: {
+          in: categoryIds,
+        },
       },
     });
-    if (category == null) {
+    if (categories.length !== categoryIds.length) {
       return new ServerError("Category not found");
     }
 
@@ -53,10 +60,8 @@ export const createModel = async (
     const model = await client.model.create({
       data: {
         name,
-        category: {
-          connect: {
-            id: category.id,
-          },
+        categories: {
+          connect: categoryIds.map((id) => ({ id })),
         },
         brand: {
           connect: {
@@ -72,34 +77,35 @@ export const createModel = async (
   }
 };
 
-// TODO: need some attention here
-// let the model to store an array of categories
-// instead of a single category
-export const updateModel = async (
-  id: string,
-  name?: string,
-  categoryId?: string
-): Promise<Model | ServerError> => {
+interface UpdateModelProps {
+  id: string;
+  name?: string;
+  categories?: string[];
+}
+export const updateModel = async ({
+  id,
+  name,
+  categories,
+}: UpdateModelProps): Promise<Model | ServerError> => {
   try {
-    const category = await client.category.findUnique({
-      where: {
-        id: categoryId,
-      },
-    });
-    if (category == null) {
-      return new ServerError("Category not found", 404);
+    if (categories != null) {
+      const category = await client.category.findMany({
+        where: {
+          id: {
+            in: categories,
+          },
+        },
+      });
+      categories = category.map((c) => c.id);
     }
-
     const model = await client.model.update({
       where: {
         id,
       },
       data: {
         name,
-        category: {
-          connect: {
-            id: category.id,
-          },
+        categories: {
+          set: categories?.map((id) => ({ id })),
         },
       },
     });
@@ -136,7 +142,7 @@ export const getProductsByModel = async (
         model: {
           include: {
             brand: true,
-            category: true,
+            categories: true,
           },
         },
       },
