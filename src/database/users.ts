@@ -37,49 +37,6 @@ export const signup = async ({
   }
 };
 
-export const getMyListings = async (
-  userId: string
-): Promise<Product[] | ServerError> => {
-  const { error } = idValidator.validate({ id: userId });
-  if (error != null) {
-    return new ServerError(error.message, 400);
-  }
-  try {
-    const listings = await client.product.findMany({
-      where: {
-        userId,
-      },
-      include: {
-        model: {
-          include: {
-            brand: true,
-            categories: true,
-          },
-        },
-      },
-    });
-    return listings;
-  } catch (error) {
-    return new ServerError(`Cannot find listings for user with id: ${userId}`);
-  }
-};
-
-// TODO: Implement search sort and pagination functionality
-export const getProductsByUser = async (
-  userId: string
-): Promise<Product[] | ServerError> => {
-  try {
-    const products = await client.product.findMany({
-      where: {
-        userId,
-      },
-    });
-    return products;
-  } catch (error) {
-    return new ServerError(`Cannot get the product with user id: ${userId}`);
-  }
-};
-
 // TODO: Implement search sort and pagination functionality
 export const searchUsers = async (
   query: string
@@ -106,5 +63,32 @@ export const searchUsers = async (
     return users;
   } catch (error) {
     return new ServerError(`Cannot search users with query: ${query}`);
+  }
+};
+
+export const getProductsByUser = async (
+  userId: string
+): Promise<Product[] | ServerError> => {
+  const { error } = idValidator.validate({ id: userId });
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+  try {
+    const listings = await client.product.findMany({
+      where: {
+        ownerId: userId,
+      },
+      include: {
+        model: {
+          include: {
+            brand: true,
+            categories: true,
+          },
+        },
+      },
+    });
+    return listings;
+  } catch (error) {
+    return new ServerError(`Cannot find listings for user with id: ${userId}`);
   }
 };
