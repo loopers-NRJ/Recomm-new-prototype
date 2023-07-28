@@ -14,13 +14,14 @@ export const GET = async (_: Request): Promise<Response> => {
 };
 
 export const POST = async (request: Request): Promise<Response> => {
-  const { userId, modelId, price, images, description } = await request.json();
+  const { userId, modelId, price, pictures, description } =
+    await request.json();
   const product = await Products.createProduct({
     userId,
     modelId,
     price,
     description,
-    images,
+    pictures,
   });
   if (product instanceof ServerError) {
     const response = new Response(product.message, {

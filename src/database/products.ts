@@ -23,8 +23,12 @@ export const getProduct = async (
         model: {
           include: {
             brand: true,
+            categories: true,
           },
         },
+        room: true,
+        buyer: true,
+        owner: true,
       },
     });
     if (product == null) {
@@ -51,14 +55,16 @@ export const createProduct = async ({
   modelId,
   price,
   description,
-  images,
+  pictures,
+  duration,
 }: CreateProductProps): Promise<Product | ServerError> => {
   const { error } = createProductValidator.validate({
     userId,
     modelId,
     price,
     description,
-    images,
+    pictures,
+    duration,
   });
   if (error != null) {
     return new ServerError(error.message, 400);
@@ -80,14 +86,19 @@ export const createProduct = async ({
             id: model.id,
           },
         },
-        user: {
+        owner: {
           connect: {
             id: userId,
           },
         },
         price,
         description,
-        pictures: images,
+        pictures,
+        room: {
+          create: {
+            duration,
+          },
+        },
       },
     });
     return product;
