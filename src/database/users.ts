@@ -1,5 +1,5 @@
 import { type Product, type User } from "@prisma/client";
-import client from "./client";
+import client, { matchError } from "./client";
 import { ServerError } from "@/lib/error";
 import {
   type SignupProps,
@@ -33,7 +33,11 @@ export const signup = async ({
     });
     return user;
   } catch (error) {
-    return new ServerError(`Cannot create the user with email: ${email}`);
+    return matchError(
+      error,
+      "User",
+      `Cannot create the user with email: ${email}`
+    );
   }
 };
 
@@ -62,7 +66,11 @@ export const searchUsers = async (
     });
     return users;
   } catch (error) {
-    return new ServerError(`Cannot search users with query: ${query}`);
+    return matchError(
+      error,
+      "Users",
+      `Cannot search users with query: ${query}`
+    );
   }
 };
 
@@ -89,6 +97,10 @@ export const getProductsByUser = async (
     });
     return listings;
   } catch (error) {
-    return new ServerError(`Cannot find listings for user with id: ${userId}`);
+    return matchError(
+      error,
+      "Listings",
+      `Cannot find listings for user with id: ${userId}`
+    );
   }
 };

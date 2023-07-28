@@ -1,5 +1,5 @@
 import type { Model, Product } from "@prisma/client";
-import client from "./client";
+import client, { matchError } from "./client";
 import { ServerError } from "@/lib/error";
 import {
   type UpdateModelProps,
@@ -26,7 +26,7 @@ export const getModel = async (id: string): Promise<Model | ServerError> => {
     }
     return model;
   } catch (error) {
-    return new ServerError(`Cannot get the model with id: ${id}`);
+    return matchError(error, "Model", `Cannot get the model with id: ${id}`);
   }
 };
 
@@ -36,7 +36,7 @@ export const getModels = async (): Promise<Model[] | ServerError> => {
     const models = await client.model.findMany();
     return models;
   } catch (error) {
-    return new ServerError("Cannot get the models");
+    return matchError(error, "Models", "Cannot get the models");
   }
 };
 
@@ -89,7 +89,11 @@ export const createModel = async ({
 
     return model;
   } catch (error) {
-    return new ServerError(`Cannot create the model with name: ${name}`);
+    return matchError(
+      error,
+      "Model",
+      `Cannot create the model with name: ${name}`
+    );
   }
 };
 
@@ -132,7 +136,7 @@ export const updateModel = async ({
 
     return model;
   } catch (error) {
-    return new ServerError(`Cannot update the model with id: ${id}`);
+    return matchError(error, "Model", `Cannot update the model with id: ${id}`);
   }
 };
 
@@ -150,7 +154,7 @@ export const deleteModel = async (id: string): Promise<Model | ServerError> => {
     });
     return model;
   } catch (error) {
-    return new ServerError(`Cannot delete the model with id: ${id}`);
+    return matchError(error, "Model", `Cannot delete the model with id: ${id}`);
   }
 };
 
@@ -179,6 +183,10 @@ export const getProductsByModel = async (
     });
     return products;
   } catch (error) {
-    return new ServerError(`Cannot get the products with model id: ${id}`);
+    return matchError(
+      error,
+      "Products",
+      `Cannot get the products with model id: ${id}`
+    );
   }
 };

@@ -1,11 +1,12 @@
 import type { Brand, Category, Model, Product } from "@prisma/client";
-import client from "./client";
+import client, { matchError } from "./client";
 import { ServerError } from "@/lib/error";
 import { idValidator } from "@/validation/objectId";
 import {
   type CreateCategoryProps,
   type UpdateCategoryProps,
   updateCategoryValidator,
+  createCategoryValidator,
 } from "@/validation/category";
 
 export const getCategory = async (
@@ -26,7 +27,11 @@ export const getCategory = async (
     }
     return category;
   } catch (error) {
-    return new ServerError(`Cannot get the category with id: ${id}`);
+    return matchError(
+      error,
+      "Category",
+      `Cannot get the category with id: ${id}`
+    );
   }
 };
 
@@ -36,7 +41,7 @@ export const getCategories = async (): Promise<Category[] | ServerError> => {
     const categories = await client.category.findMany();
     return categories;
   } catch (error) {
-    return new ServerError("Cannot get the categories");
+    return matchError(error, "Categories", "Cannot get the categories");
   }
 };
 
@@ -44,7 +49,7 @@ export const createCategory = async ({
   name,
   picture,
 }: CreateCategoryProps): Promise<Category | ServerError> => {
-  const { error } = idValidator.validate(name);
+  const { error } = createCategoryValidator.validate({ name, picture });
   if (error != null) {
     return new ServerError(error.message, 400);
   }
@@ -57,7 +62,11 @@ export const createCategory = async ({
     });
     return category;
   } catch (error) {
-    return new ServerError(`Cannot create the category with name: ${name}`);
+    return matchError(
+      error,
+      "Category",
+      `Cannot create the category with name: ${name}`
+    );
   }
 };
 
@@ -82,7 +91,11 @@ export const updateCategory = async ({
     });
     return category;
   } catch (error) {
-    return new ServerError(`Cannot update the category with id: ${id}`);
+    return matchError(
+      error,
+      "Category",
+      `Cannot update the category with id: ${id}`
+    );
   }
 };
 
@@ -102,7 +115,11 @@ export const deleteCategory = async (
 
     return category;
   } catch (error) {
-    return new ServerError(`Cannot delete the category with id: ${id}`);
+    return matchError(
+      error,
+      "Category",
+      `Cannot delete the category with id: ${id}`
+    );
   }
 };
 
@@ -124,7 +141,11 @@ export const getModelsByCategory = async (
     });
     return models;
   } catch (error) {
-    return new ServerError(`Cannot get the models with category id: ${id}`);
+    return matchError(
+      error,
+      "Models",
+      `Cannot get the models with category id: ${id}`
+    );
   }
 };
 
@@ -151,7 +172,11 @@ export const getBrandsByCategory = async (
 
     return brands;
   } catch (error) {
-    return new ServerError(`Cannot get the brands with category id: ${id}`);
+    return matchError(
+      error,
+      "Brands",
+      `Cannot get the brands with category id: ${id}`
+    );
   }
 };
 
@@ -183,6 +208,10 @@ export const getProductsByCategory = async (
     });
     return products;
   } catch (error) {
-    return new ServerError(`Cannot get the products with category id: ${id}`);
+    return matchError(
+      error,
+      "Products",
+      `Cannot get the products with category id: ${id}`
+    );
   }
 };

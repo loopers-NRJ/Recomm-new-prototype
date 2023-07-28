@@ -1,5 +1,5 @@
 import { ServerError } from "@/lib/error";
-import client from "./client";
+import client, { matchError } from "./client";
 import type { Brand, Model, Product } from "@prisma/client";
 import {
   type UpdateBrandProps,
@@ -24,7 +24,7 @@ export const getBrand = async (id: string): Promise<Brand | ServerError> => {
     }
     return brand;
   } catch (error) {
-    return new ServerError(`Cannot get the brand with id: ${id}`);
+    return matchError(error, "Brand", `Cannot get the brand with id: ${id}`);
   }
 };
 
@@ -34,7 +34,7 @@ export const getBrands = async (): Promise<Brand[] | ServerError> => {
     const brands = await client.brand.findMany();
     return brands;
   } catch (error) {
-    return new ServerError("Cannot get the brands");
+    return matchError(error, "Brands", "Cannot get the brands");
   }
 };
 
@@ -53,7 +53,11 @@ export const createBrand = async ({
     });
     return brand;
   } catch (error) {
-    return new ServerError(`Cannot create the brand with name: ${name}`);
+    return matchError(
+      error,
+      "Brand",
+      `Cannot create the brand with name: ${name}`
+    );
   }
 };
 
@@ -76,7 +80,7 @@ export const updateBrand = async ({
     });
     return brand;
   } catch (error) {
-    return new ServerError(`Cannot update the brand with id: ${id}`);
+    return matchError(error, "Brand", `Cannot update the brand with id: ${id}`);
   }
 };
 
@@ -93,7 +97,7 @@ export const deleteBrand = async (id: string): Promise<Brand | ServerError> => {
     });
     return brand;
   } catch (error) {
-    return new ServerError(`Cannot delete the brand with id: ${id}`);
+    return matchError(error, "Brand", `Cannot delete the brand with id: ${id}`);
   }
 };
 
@@ -114,7 +118,11 @@ export const getModelsByBrand = async (
     });
     return models;
   } catch (error) {
-    return new ServerError(`Cannot get the models of brand with id: ${id}`);
+    return matchError(
+      error,
+      "Model",
+      `Cannot get the models of brand with id: ${id}`
+    );
   }
 };
 
@@ -145,6 +153,10 @@ export const getProductsByBrand = async (
     });
     return products;
   } catch (error) {
-    return new ServerError(`Cannot get the products with brand id: ${id}`);
+    return matchError(
+      error,
+      "Product",
+      `Cannot get the products with brand id: ${id}`
+    );
   }
 };
