@@ -3,6 +3,6 @@ export class ServerError extends Error {
     message: string,
     public status = 500
   ) {
-    super(message);
+    super(JSON.stringify({ error: message }));
   }
 }

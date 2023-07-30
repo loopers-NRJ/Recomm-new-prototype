@@ -49,7 +49,7 @@ export const matchError = (
         return new ServerError("Invalid input", 400);
       default:
         console.error(error);
-        return new ServerError("Internal server error");
+        return new ServerError(message);
     }
   }
   console.error(error);

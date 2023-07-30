@@ -1,4 +1,4 @@
-import { Provider } from "@prisma/client";
+import { AuthProvider } from "@prisma/client";
 import Joi from "joi";
 
 export interface SignupProps {
@@ -7,8 +7,8 @@ export interface SignupProps {
   provider: string;
 }
 
-export const getProviderVarient = (provider: string): Provider => {
-  let providerEnum: Provider = "Google";
+export const getProviderVarient = (provider: string): AuthProvider => {
+  let providerEnum: AuthProvider = "Google";
   switch (provider) {
     case "google":
       providerEnum = "Google";
@@ -21,7 +21,7 @@ export const signupValidator = Joi.object({
   email: Joi.string().email().label("Email").required(),
   name: Joi.string().min(1).max(255).label("Name").required(),
   provider: Joi.string()
-    .valid(Object.values(Provider))
+    .valid(...Object.values(AuthProvider))
     .label("Provider")
     .required(),
 });

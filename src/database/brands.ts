@@ -4,8 +4,9 @@ import type { Brand, Model, Product } from "@prisma/client";
 import {
   type UpdateBrandProps,
   type CreateBrandProps,
+  createBrandValidator,
+  updateBrandValidator,
 } from "@/validation/brand";
-import { createModelValidator, updateModelValidator } from "@/validation/model";
 import { idValidator } from "@/validation/objectId";
 
 export const getBrand = async (id: string): Promise<Brand | ServerError> => {
@@ -40,8 +41,9 @@ export const getBrands = async (): Promise<Brand[] | ServerError> => {
 
 export const createBrand = async ({
   name,
+  picture,
 }: CreateBrandProps): Promise<Brand | ServerError> => {
-  const { error } = createModelValidator.validate({ name });
+  const { error } = createBrandValidator.validate({ name, picture });
   if (error != null) {
     return new ServerError(error.message, 400);
   }
@@ -49,6 +51,7 @@ export const createBrand = async ({
     const brand = await client.brand.create({
       data: {
         name,
+        picture,
       },
     });
     return brand;
@@ -64,8 +67,9 @@ export const createBrand = async ({
 export const updateBrand = async ({
   id,
   name,
+  picture,
 }: UpdateBrandProps): Promise<Brand | ServerError> => {
-  const { error } = updateModelValidator.validate({ id, name });
+  const { error } = updateBrandValidator.validate({ id, name, picture });
   if (error != null) {
     return new ServerError(error.message, 400);
   }
@@ -76,6 +80,7 @@ export const updateBrand = async ({
       },
       data: {
         name,
+        picture,
       },
     });
     return brand;

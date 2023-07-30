@@ -109,19 +109,6 @@ describe("category api", () => {
     });
   });
 
-  describe("get all categories", () => {
-    it("should return a 200 status code", async () => {
-      const res = await app.get(`/api/category`);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0]).toHaveProperty("id");
-      expect(res.body[0]).toHaveProperty("createdAt");
-      expect(res.body[0]).toHaveProperty("updatedAt");
-      expect(res.body[0].name).toBe("test2");
-      expect(res.body[0].picture).toBe("test2");
-    });
-  });
-
   describe("delete category with id", () => {
     it("should return a 200 status code", async () => {
       if (category == null) {

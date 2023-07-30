@@ -14,9 +14,8 @@ export const GET = async (request: Request): Promise<Response> => {
 };
 
 export const POST = async (request: Request): Promise<Response> => {
-  // TODO: validate here
-  const { name } = await request.json();
-  const brand = await Brand.createBrand({ name });
+  const { name, picture } = await request.json();
+  const brand = await Brand.createBrand({ name, picture });
   if (brand instanceof ServerError) {
     const response = new Response(brand.message, {
       status: brand.status,

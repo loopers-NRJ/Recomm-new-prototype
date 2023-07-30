@@ -26,8 +26,8 @@ export const PUT = async (
   request: Request,
   { params: { brandId } }: Context
 ): Promise<Response> => {
-  const { name } = await request.json();
-  const brand = await Brands.updateBrand({ id: brandId, name });
+  const { name, picture } = await request.json();
+  const brand = await Brands.updateBrand({ id: brandId, name, picture });
   if (brand instanceof ServerError) {
     const response = new Response(brand.message, {
       status: brand.status,
