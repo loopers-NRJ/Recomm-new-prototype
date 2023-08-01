@@ -74,6 +74,24 @@ export const searchUsers = async (
   }
 };
 
+export const getUserByEmail = async (
+  email: string
+): Promise<User | ServerError> => {
+  try {
+    const user = await client.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (user == null) {
+      return new ServerError(`User with email: ${email} not found`, 404);
+    }
+    return user;
+  } catch (error) {
+    return matchError(error, "User", `Cannot find user with email: ${email}`);
+  }
+};
+
 export const getProductsByUser = async (
   userId: string
 ): Promise<Product[] | ServerError> => {
