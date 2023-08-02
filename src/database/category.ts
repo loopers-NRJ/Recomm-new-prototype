@@ -1,4 +1,4 @@
-import type { Brand, Category, Model, Product } from "@prisma/client";
+import type { Brand, Category, Model } from "@prisma/client";
 import client, { matchError } from "./client";
 import { ServerError } from "@/lib/error";
 import { idValidator } from "@/validation/objectId";
@@ -8,6 +8,7 @@ import {
   updateCategoryValidator,
   createCategoryValidator,
 } from "@/validation/category";
+import { type Product, productItems } from "./products";
 
 export const getCategory = async (
   id: string
@@ -34,8 +35,6 @@ export const getCategory = async (
     );
   }
 };
-
-// TODO: Implement search sort and pagination functionality
 
 export const getCategories = async ({
   search,
@@ -142,7 +141,6 @@ export const deleteCategory = async (
   }
 };
 
-// TODO: Implement search sort and pagination functionality
 export const getModelsByCategory = async (
   id: string,
   { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
@@ -178,7 +176,6 @@ export const getModelsByCategory = async (
   }
 };
 
-// TODO: Implement search sort and pagination functionality
 export const getBrandsByCategory = async (
   id: string,
   { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
@@ -219,7 +216,6 @@ export const getBrandsByCategory = async (
   }
 };
 
-// TODO: Implement search sort and pagination functionality
 export const getProductsByCategory = async (
   id: string,
   { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
@@ -265,14 +261,7 @@ export const getProductsByCategory = async (
         },
         createdAt: sortBy === "createdAt" ? sortOrder : undefined,
       },
-      include: {
-        model: {
-          include: {
-            brand: true,
-            categories: true,
-          },
-        },
-      },
+      select: productItems,
     });
     return products;
   } catch (error) {

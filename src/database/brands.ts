@@ -29,7 +29,6 @@ export const getBrand = async (id: string): Promise<Brand | ServerError> => {
   }
 };
 
-// TODO: Implement search sort and pagination functionality
 export const getBrands = async ({
   search,
   sortOrder,
@@ -124,7 +123,6 @@ export const deleteBrand = async (id: string): Promise<Brand | ServerError> => {
   }
 };
 
-// TODO: Implement search sort and pagination functionality
 export const getModelsByBrand = async (
   id: string,
   { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
@@ -159,7 +157,6 @@ export const getModelsByBrand = async (
   }
 };
 
-// TODO: Implement search sort and pagination functionality
 export const getProductsByBrand = async (
   id: string,
   { search, sortOrder, sortBy, page, limit }: FunctionalityOptions

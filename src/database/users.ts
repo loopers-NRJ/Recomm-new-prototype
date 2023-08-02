@@ -41,7 +41,6 @@ export const signup = async ({
   }
 };
 
-// TODO: Implement search sort and pagination functionality
 export const searchUsers = async (
   query: string
 ): Promise<User[] | ServerError> => {

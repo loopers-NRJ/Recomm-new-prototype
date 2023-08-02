@@ -9,7 +9,7 @@ import {
 } from "@/validation/product";
 import { idValidator } from "@/validation/objectId";
 
-const userItems = {
+export const productItems = {
   id: true,
   description: true,
   pictures: true,
@@ -23,9 +23,9 @@ const userItems = {
   owner: true,
   createdAt: true,
   updatedAt: true,
-};
+} as const;
 
-type Product = Omit<OriginalProduct, "favoritedUserId">;
+export type Product = Omit<OriginalProduct, "favoritedUserId">;
 
 export const getProduct = async (
   id: string
@@ -37,7 +37,7 @@ export const getProduct = async (
     }
     const product = await client.product.findUnique({
       where: { id },
-      select: userItems,
+      select: productItems,
     });
     if (product == null) {
       return new ServerError("Product not found", 404);
@@ -52,7 +52,6 @@ export const getProduct = async (
   }
 };
 
-// TODO: check if this function is needed. If not, remove it
 export const getProducts = async ({
   search,
   sortOrder,
@@ -92,7 +91,7 @@ export const getProducts = async ({
         },
         createdAt: sortBy === "createdAt" ? sortOrder : undefined,
       },
-      select: userItems,
+      select: productItems,
     });
     return allProducts;
   } catch (error) {
@@ -150,7 +149,7 @@ export const createProduct = async ({
           },
         },
       },
-      select: userItems,
+      select: productItems,
     });
     return product;
   } catch (error) {
@@ -182,7 +181,7 @@ export const updateProduct = async ({
         pictures,
         description,
       },
-      select: userItems,
+      select: productItems,
     });
     return product;
   } catch (error) {
@@ -206,7 +205,7 @@ export const deleteProduct = async (
       where: {
         id,
       },
-      select: userItems,
+      select: productItems,
     });
     return product;
   } catch (error) {
@@ -261,6 +260,9 @@ export const getRoomByProduct = async (
           include: {
             user: true,
           },
+        },
+        product: {
+          select: productItems,
         },
       },
     });
