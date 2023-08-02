@@ -23,12 +23,12 @@ export interface UpdateProductProps {
   id: string;
   price?: number;
   description?: string;
-  images?: string[];
+  pictures?: string[];
 }
 
 export const updateProductValidator = Joi.object({
   id: ObjectId,
   price: Joi.number().min(0).label("Price"),
   description: Joi.string().min(1).max(255).label("Description"),
-  images: Joi.array().items(Joi.string()).label("Images"),
+  pictures: Joi.array().items(Joi.string()).label("Images"),
 });

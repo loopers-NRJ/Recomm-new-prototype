@@ -1,4 +1,4 @@
-import type { Product } from "@prisma/client";
+import type { Product as OriginalProduct, Room } from "@prisma/client";
 import client, { matchError } from "./client";
 import { ServerError } from "@/lib/error";
 import {
@@ -8,6 +8,24 @@ import {
   updateProductValidator,
 } from "@/validation/product";
 import { idValidator } from "@/validation/objectId";
+
+const userItems = {
+  id: true,
+  description: true,
+  pictures: true,
+  price: true,
+  room: true,
+  buyerId: true,
+  buyer: true,
+  modelId: true,
+  model: true,
+  ownerId: true,
+  owner: true,
+  createdAt: true,
+  updatedAt: true,
+};
+
+type Product = Omit<OriginalProduct, "favoritedUserId">;
 
 export const getProduct = async (
   id: string
@@ -19,17 +37,7 @@ export const getProduct = async (
     }
     const product = await client.product.findUnique({
       where: { id },
-      include: {
-        model: {
-          include: {
-            brand: true,
-            categories: true,
-          },
-        },
-        room: true,
-        buyer: true,
-        owner: true,
-      },
+      select: userItems,
     });
     if (product == null) {
       return new ServerError("Product not found", 404);
@@ -45,9 +53,47 @@ export const getProduct = async (
 };
 
 // TODO: check if this function is needed. If not, remove it
-export const getProducts = async (): Promise<Product[] | ServerError> => {
+export const getProducts = async ({
+  search,
+  sortOrder,
+  sortBy,
+  page,
+  limit,
+}: FunctionalityOptions): Promise<Product[] | ServerError> => {
   try {
-    const allProducts = await client.product.findMany();
+    const allProducts = await client.product.findMany({
+      where: {
+        OR: [
+          {
+            model: {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            model: {
+              brand: {
+                name: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+        ],
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        model: {
+          name: sortBy === "name" ? sortOrder : undefined,
+        },
+        createdAt: sortBy === "createdAt" ? sortOrder : undefined,
+      },
+      select: userItems,
+    });
     return allProducts;
   } catch (error) {
     return matchError(error, "Products", "Cannot get the products");
@@ -104,6 +150,7 @@ export const createProduct = async ({
           },
         },
       },
+      select: userItems,
     });
     return product;
   } catch (error) {
@@ -118,9 +165,10 @@ export const createProduct = async ({
 export const updateProduct = async ({
   id,
   price,
-  images,
+  pictures,
+  description,
 }: UpdateProductProps): Promise<Product | ServerError> => {
-  const { error } = updateProductValidator.validate({ id, price, images });
+  const { error } = updateProductValidator.validate({ id, price, pictures });
   if (error != null) {
     return new ServerError(error.message, 400);
   }
@@ -131,8 +179,10 @@ export const updateProduct = async ({
       },
       data: {
         price,
-        pictures: images,
+        pictures,
+        description,
       },
+      select: userItems,
     });
     return product;
   } catch (error) {
@@ -156,6 +206,7 @@ export const deleteProduct = async (
       where: {
         id,
       },
+      select: userItems,
     });
     return product;
   } catch (error) {
@@ -163,6 +214,65 @@ export const deleteProduct = async (
       error,
       "Product",
       `Cannot delete the product with id: ${id}`
+    );
+  }
+};
+
+export const getRoomByProduct = async (
+  id: string,
+  { search, page, limit }: FunctionalityOptions
+): Promise<Room | ServerError> => {
+  const { error } = idValidator.validate(id);
+  if (error != null) {
+    return new ServerError(error.message, 400);
+  }
+  try {
+    const room = await client.room.findUnique({
+      where: {
+        productId: id,
+      },
+      include: {
+        bids: {
+          where: {
+            OR: [
+              {
+                user: {
+                  name: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+              },
+              {
+                user: {
+                  email: {
+                    contains: search,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            ],
+          },
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: {
+            createdAt: "desc",
+          },
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+    if (room == null) {
+      return new ServerError("Room not found", 404);
+    }
+    return room;
+  } catch (error) {
+    return matchError(
+      error,
+      "Room",
+      `Cannot get the room of the product with id: ${id}`
     );
   }
 };

@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import * as Products from "@/database/products";
 import { ServerError } from "@/lib/error";
+import parseOptions from "@/util/parseOptions";
 
-export const GET = async (_: Request): Promise<Response> => {
-  const brand = await Products.getProducts();
+export const GET = async (request: Request): Promise<Response> => {
+  const options = parseOptions(request.url);
+  const brand = await Products.getProducts(options);
   if (brand instanceof ServerError) {
     const response = new Response(brand.message, {
       status: brand.status,

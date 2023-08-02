@@ -26,12 +26,13 @@ export const PUT = async (
   request: Request,
   { params: { productId } }: Context
 ): Promise<Response> => {
-  const { price, images, description } = await request.json();
+  const { price, pictures, description } = await request.json();
+
   const model = await Products.updateProduct({
     id: productId,
     price,
     description,
-    images,
+    pictures,
   });
   if (model instanceof ServerError) {
     const response = new Response(model.message, {

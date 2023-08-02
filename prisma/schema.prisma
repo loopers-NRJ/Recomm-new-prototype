@@ -87,21 +87,25 @@ model Product {
 }
 
 model Room {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  bids       Bid[]
-  duration   Float    @default(1440)
-  createdAt  DateTime @default(now())
-  highestBid Float?
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId  String   @unique @db.ObjectId
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  duration     Float    @default(1440)
+  bids         Bid[]    @relation(name: "bids")
+  bidIds       String[] @db.ObjectId
+  highestBid   Bid?     @relation(name: "highestBid")
+  highestBidId String?  @db.ObjectId
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    String   @unique @db.ObjectId
+  createdAt    DateTime @default(now())
 }
 
 model Bid {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @db.ObjectId
-  price     Float
-  Room      Room?    @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  roomId    String?  @db.ObjectId
-  createdAt DateTime @default(now())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  user                User     @relation(fields: [userId], references: [id])
+  userId              String   @db.ObjectId
+  price               Float
+  room                Room?    @relation(name: "bids", fields: [roomId], references: [id], onDelete: Cascade)
+  roomId              String?  @db.ObjectId
+  highestBiddedRoom   Room?    @relation(name: "highestBid", fields: [highestBiddedRoomId], references: [id])
+  highestBiddedRoomId String?  @unique @db.ObjectId
+  createdAt           DateTime @default(now())
 }

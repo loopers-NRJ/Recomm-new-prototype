@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import * as Models from "@/database/models";
 import { ServerError } from "@/lib/error";
+import parseOptions from "@/util/parseOptions";
 
 export const GET = async (request: Request): Promise<Response> => {
-  const brand = await Models.getModels();
+  const options = parseOptions(request.url);
+  const brand = await Models.getModels(options);
   if (brand instanceof ServerError) {
     const response = new Response(brand.message, {
       status: brand.status,

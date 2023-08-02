@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import * as Category from "@/database/category";
 import { ServerError } from "@/lib/error";
+import parseOptions from "@/util/parseOptions";
 
-export const GET = async (): Promise<Response> => {
-  const categories = await Category.getCategories();
+export const GET = async (request: Request): Promise<Response> => {
+  const options = parseOptions(request.url);
+  const categories = await Category.getCategories(options);
   if (categories instanceof ServerError) {
     const response = new Response(categories.message, {
       status: categories.status,

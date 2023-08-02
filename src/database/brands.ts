@@ -30,9 +30,27 @@ export const getBrand = async (id: string): Promise<Brand | ServerError> => {
 };
 
 // TODO: Implement search sort and pagination functionality
-export const getBrands = async (): Promise<Brand[] | ServerError> => {
+export const getBrands = async ({
+  search,
+  sortOrder,
+  sortBy,
+  page,
+  limit,
+}: FunctionalityOptions): Promise<Brand[] | ServerError> => {
   try {
-    const brands = await client.brand.findMany();
+    const brands = await client.brand.findMany({
+      where: {
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+    });
     return brands;
   } catch (error) {
     return matchError(error, "Brands", "Cannot get the brands");
@@ -108,7 +126,8 @@ export const deleteBrand = async (id: string): Promise<Brand | ServerError> => {
 
 // TODO: Implement search sort and pagination functionality
 export const getModelsByBrand = async (
-  id: string
+  id: string,
+  { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
 ): Promise<Model[] | ServerError> => {
   const { error } = idValidator.validate(id);
   if (error != null) {
@@ -119,6 +138,15 @@ export const getModelsByBrand = async (
     const models = await client.model.findMany({
       where: {
         brandId: id,
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
       },
     });
     return models;
@@ -133,7 +161,8 @@ export const getModelsByBrand = async (
 
 // TODO: Implement search sort and pagination functionality
 export const getProductsByBrand = async (
-  id: string
+  id: string,
+  { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
 ): Promise<Product[] | ServerError> => {
   const { error } = idValidator.validate(id);
   if (error != null) {
@@ -146,6 +175,34 @@ export const getProductsByBrand = async (
         model: {
           brandId: id,
         },
+        OR: [
+          {
+            model: {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            model: {
+              brand: {
+                name: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+        ],
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        model: {
+          name: sortBy === "name" ? sortOrder : undefined,
+        },
+        createdAt: sortBy === "createdAt" ? sortOrder : undefined,
       },
       include: {
         model: {

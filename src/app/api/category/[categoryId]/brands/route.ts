@@ -3,12 +3,14 @@ import { NextResponse } from "next/server";
 import * as Category from "@/database/category";
 
 import type { Context } from "../route";
+import parseOptions from "@/util/parseOptions";
 
 export const GET = async (
-  _: Request,
+  request: Request,
   { params: { categoryId } }: Context
 ): Promise<Response> => {
-  const brands = await Category.getBrandsByCategory(categoryId);
+  const options = parseOptions(request.url);
+  const brands = await Category.getBrandsByCategory(categoryId, options);
   if (brands instanceof ServerError) {
     const response = new Response(brands.message, {
       status: brands.status,

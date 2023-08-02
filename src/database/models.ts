@@ -31,9 +31,27 @@ export const getModel = async (id: string): Promise<Model | ServerError> => {
 };
 
 // TODO: Implement search sort and pagination functionality
-export const getModels = async (): Promise<Model[] | ServerError> => {
+export const getModels = async ({
+  search,
+  sortOrder,
+  sortBy,
+  page,
+  limit,
+}: FunctionalityOptions): Promise<Model[] | ServerError> => {
   try {
-    const models = await client.model.findMany();
+    const models = await client.model.findMany({
+      where: {
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+    });
     return models;
   } catch (error) {
     return matchError(error, "Models", "Cannot get the models");
@@ -160,7 +178,8 @@ export const deleteModel = async (id: string): Promise<Model | ServerError> => {
 
 // TODO: Implement search sort and pagination functionality
 export const getProductsByModel = async (
-  id: string
+  id: string,
+  { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
 ): Promise<Product[] | ServerError> => {
   const { error } = idValidator.validate(id);
   if (error != null) {
@@ -171,6 +190,34 @@ export const getProductsByModel = async (
     const products = await client.product.findMany({
       where: {
         modelId: id,
+        OR: [
+          {
+            model: {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            model: {
+              brand: {
+                name: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+        ],
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        model: {
+          name: sortBy === "name" ? sortOrder : undefined,
+        },
+        createdAt: sortBy === "createdAt" ? sortOrder : undefined,
       },
       include: {
         model: {

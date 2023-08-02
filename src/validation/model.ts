@@ -10,7 +10,7 @@ export const createModelValidator = Joi.object({
   name: Joi.string().min(1).max(255).label("Name").required(),
   brandId: ObjectId,
   categoryIds: Joi.array()
-    .items(Joi.string())
+    .items(ObjectId)
     .label("Category IDs")
     .min(1)
     .required(),
@@ -25,5 +25,5 @@ export interface UpdateModelProps {
 export const updateModelValidator = Joi.object({
   id: ObjectId,
   name: Joi.string().min(1).max(255).label("Name"),
-  categoryIds: Joi.array().items(Joi.string()).label("Category IDs").min(1),
+  categoryIds: Joi.array().items(ObjectId).label("Category IDs").min(1),
 });

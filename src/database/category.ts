@@ -36,9 +36,28 @@ export const getCategory = async (
 };
 
 // TODO: Implement search sort and pagination functionality
-export const getCategories = async (): Promise<Category[] | ServerError> => {
+
+export const getCategories = async ({
+  search,
+  sortOrder,
+  sortBy,
+  page,
+  limit,
+}: FunctionalityOptions): Promise<Category[] | ServerError> => {
   try {
-    const categories = await client.category.findMany();
+    const categories = await client.category.findMany({
+      where: {
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+    });
     return categories;
   } catch (error) {
     return matchError(error, "Categories", "Cannot get the categories");
@@ -125,7 +144,8 @@ export const deleteCategory = async (
 
 // TODO: Implement search sort and pagination functionality
 export const getModelsByCategory = async (
-  id: string
+  id: string,
+  { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
 ): Promise<Model[] | ServerError> => {
   const { error } = idValidator.validate(id);
   if (error != null) {
@@ -137,6 +157,15 @@ export const getModelsByCategory = async (
         categoryIds: {
           has: id,
         },
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
       },
     });
     return models;
@@ -151,7 +180,8 @@ export const getModelsByCategory = async (
 
 // TODO: Implement search sort and pagination functionality
 export const getBrandsByCategory = async (
-  id: string
+  id: string,
+  { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
 ): Promise<Brand[] | ServerError> => {
   const { error } = idValidator.validate(id);
   if (error != null) {
@@ -167,6 +197,15 @@ export const getBrandsByCategory = async (
             },
           },
         },
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder,
       },
     });
 
@@ -182,7 +221,8 @@ export const getBrandsByCategory = async (
 
 // TODO: Implement search sort and pagination functionality
 export const getProductsByCategory = async (
-  id: string
+  id: string,
+  { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
 ): Promise<Product[] | ServerError> => {
   const { error } = idValidator.validate(id);
   if (error != null) {
@@ -196,6 +236,34 @@ export const getProductsByCategory = async (
             has: id,
           },
         },
+        OR: [
+          {
+            model: {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            model: {
+              brand: {
+                name: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+        ],
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        model: {
+          name: sortBy === "name" ? sortOrder : undefined,
+        },
+        createdAt: sortBy === "createdAt" ? sortOrder : undefined,
       },
       include: {
         model: {
