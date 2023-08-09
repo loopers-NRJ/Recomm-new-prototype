@@ -1,19 +1,15 @@
 import { ServerError } from "@/lib/error";
 import type { Bid } from "@prisma/client";
 import client, { matchError } from "./client";
-
+import { type CreateBidProps, createBidValidator } from "@/validation/bid";
 export const postABid = async ({
   roomId,
   price,
-  userId,
-}: {
-  roomId: string;
-  price: number;
-  userId: string;
-  //   TODO: get user instead of userId
-}): Promise<Bid | ServerError> => {
-  if (Number.isNaN(price) || price < 0) {
-    return new ServerError("Invalid price", 400);
+  userId, // TODO: get user instead of userId
+}: CreateBidProps): Promise<Bid | ServerError> => {
+  const { error } = createBidValidator.validate({ price, roomId, userId });
+  if (error != null) {
+    return new ServerError(error.message, 400);
   }
   return await client.$transaction(async (client) => {
     try {
