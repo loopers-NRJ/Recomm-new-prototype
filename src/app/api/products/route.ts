@@ -16,14 +16,16 @@ export const GET = async (request: Request): Promise<Response> => {
 };
 
 export const POST = async (request: Request): Promise<Response> => {
-  const { userId, modelId, price, pictures, description } =
+  const { userId, modelId, price, pictures, description, endTime } =
     await request.json();
+
   const product = await Products.createProduct({
     userId,
     modelId,
-    price,
+    price: +price,
     description,
     pictures,
+    endTime,
   });
   if (product instanceof ServerError) {
     const response = new Response(product.message, {
