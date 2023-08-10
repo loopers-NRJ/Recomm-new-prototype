@@ -7,7 +7,7 @@ export interface CreateProductProps {
   price: number;
   description: string;
   pictures: string[];
-  duration?: number;
+  endTime: string;
 }
 
 export const createProductValidator = Joi.object({
@@ -16,7 +16,7 @@ export const createProductValidator = Joi.object({
   price: Joi.number().min(0).label("Price").required(),
   description: Joi.string().min(1).max(255).label("Description").required(),
   pictures: Joi.array().items(Joi.string()).label("Images").required(),
-  duration: Joi.number().min(5).label("Duration"),
+  endTime: Joi.string().label("End time").required(),
 });
 
 export interface UpdateProductProps {
