@@ -27,7 +27,7 @@ const Wishes: Wish[] = [
   },
 ];
 
-export const WishIt: FC = () => {
+const WishIt: FC = () => {
   return (
     <main>
       <AddWish></AddWish>

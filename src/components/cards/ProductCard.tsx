@@ -4,7 +4,7 @@ import React, { type FC, useState, useEffect } from "react";
 import Image from "next/image";
 import UserImage from "@/assets/images/user-image.jpg";
 import ProductImage from "@/assets/images/car.jpeg";
-import { type Product } from "@/app/data";
+import { type Product } from "@/data";
 
 interface Props {
   product: Product;
