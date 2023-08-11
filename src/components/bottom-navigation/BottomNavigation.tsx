@@ -18,7 +18,7 @@ export function BottomNavigation(): React.JSX.Element {
     { title: "home", url: "/", Icon: FiHome },
     { title: "wishlist", url: "/wishlist", Icon: FiHeart },
     { title: "bids", url: "/biddings", Icon: FiShoppingBag },
-    { title: "profile", url: "/signin", Icon: FiUser },
+    { title: "profile", url: "/profile", Icon: FiUser },
   ];
 
   return (
@@ -31,7 +31,9 @@ export function BottomNavigation(): React.JSX.Element {
                 href={tab.url}
                 className={
                   "flex h-full w-full flex-col items-center justify-center text-xs font-medium select-none bg-white transition-all duration-300" +
-                  (currentPage === tab.url ? "border border-t-4 border-black" : "")
+                  (currentPage === tab.url
+                    ? "border border-t-4 border-black"
+                    : "")
                 }
               >
                 <tab.Icon size={"1.2rem"} />

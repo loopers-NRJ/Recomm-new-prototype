@@ -17,6 +17,7 @@ interface Timer {
   seconds: number;
 }
 
+// function to get the hours, minutes and seconds from the product's end timestamp
 const getTimeRemaining = (endtime: string): Timer => {
   const total = Date.parse(endtime) - Date.parse(new Date().toString());
   const seconds = Math.floor((total / 1000) % 60);
@@ -32,10 +33,8 @@ const getTimeRemaining = (endtime: string): Timer => {
 };
 
 export const ProductCard: FC<Props> = ({ product }) => {
-  // function to get the hours, minutes and seconds from the product's end timestamp
-  const { days, hours, minutes, seconds } = getTimeRemaining(
-    product.room.end.toString()
-  );
+  const end = product.room.end.toString();
+  const { days, hours, minutes, seconds } = getTimeRemaining(end);
 
   // implement a countdown timer
   const [timeLeft, setTimeLeft] = useState({
@@ -67,57 +66,54 @@ export const ProductCard: FC<Props> = ({ product }) => {
         alt="user-image"
       />
       <Image
-        className="product-image h-32 group-hover:h-40 transition-all duration-500 object-cover w-full"
+        className="product-image h-32 group-hover:h-40 object-cover w-full transition-all duration-500"
         src={ProductImage}
         alt="product-image"
       />
 
-      <div className="details grid p-3 bg-white w-full">
+      <div className="details p-3 bg-white w-full">
         <p>
-          <span className="font-semibold text-xs uppercase">Model Name: </span>
+          <span className="font-bold text-xs uppercase">Model Name: </span>
           <span className="font-normal text-sm">{product.model.name}</span>
         </p>
         <p>
-          <span className="font-semibold text-xs uppercase">Brand: </span>
-          <span className="font-normal text-sm">{product.model.brand.name}</span>
+          <span className="font-bold text-xs uppercase">Brand: </span>
+          <span className="font-normal text-sm">
+            {product.model.brand.name}
+          </span>
         </p>
-        <p className="truncate">
-          <span className="font-semibold text-xs uppercase">Description: </span>
+        <p className="h-5 overflow-hidden">
+          <span className="font-bold text-xs uppercase">Description: </span>
           <span className="font-normal text-sm">{product.description}</span>
         </p>
 
         <div className="countdown my-3">
+          <div className="digits grid grid-flow-col grid-cols-4 gap-5 text-center text-2xl font-semibold">
+            {/* display double digit number */}
+            <span className="bg-primary text-accent py-1 rounded-lg">
+              {timeLeft.days < 10 ? `0${timeLeft.days}` : timeLeft.days}
+            </span>
+            <span className="bg-primary text-accent py-1 rounded-lg">
+              {timeLeft.hours < 10 ? `0${timeLeft.hours}` : timeLeft.hours}
+            </span>
+            <span className="bg-primary text-accent py-1 rounded-lg">
+              {timeLeft.minutes < 10
+                ? `0${timeLeft.minutes}`
+                : timeLeft.minutes}
+            </span>
+            <span className="bg-primary text-accent py-1 rounded-lg">
+              {timeLeft.seconds < 10
+                ? `0${timeLeft.seconds}`
+                : timeLeft.seconds}
+            </span>
+          </div>
           <h1 className="headings text-sm font-light text-center grid grid-flow-col grid-cols-4 gap-5">
             <span>Days</span>
             <span>Hours</span>
             <span>Minutes</span>
             <span>Seconds</span>
           </h1>
-          <h1 className="digits grid grid-flow-col grid-cols-4 gap-5 text-center text-2xl font-semibold">
-            {/* display double digit number */}
-            <span className="bg-primary text-accent p-2 rounded-lg">
-              {timeLeft.days < 10 ? `0${timeLeft.days}` : timeLeft.days}
-            </span>
-            <span className="bg-primary text-accent p-2 rounded-lg">
-              {timeLeft.hours < 10 ? `0${timeLeft.hours}` : timeLeft.hours}
-            </span>
-            <span className="bg-primary text-accent p-2 rounded-lg">
-              {timeLeft.minutes < 10
-                ? `0${timeLeft.minutes}`
-                : timeLeft.minutes}
-            </span>
-            <span className="bg-primary text-accent p-2 rounded-lg">
-              {timeLeft.seconds < 10
-                ? `0${timeLeft.seconds}`
-                : timeLeft.seconds}
-            </span>
-          </h1>
         </div>
-        {timeLeft.seconds >= 0 ? (
-          <span className="text-red-600 text-sm">Bidding is Live</span>
-        ) : (
-          ""
-        )}
       </div>
     </div>
   );

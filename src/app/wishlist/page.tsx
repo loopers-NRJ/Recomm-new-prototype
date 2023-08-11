@@ -29,14 +29,14 @@ const Wishes: Wish[] = [
 
 export const WishIt: FC = () => {
   return (
-    <>
+    <main>
       <AddWish></AddWish>
-      <div className="list mt-7 space-y-3">
+      <div className="list space-y-3">
         {Wishes.map((wish) => (
           <WishCard key={wish.id} {...wish} />
         ))}
       </div>
-    </>
+    </main>
   );
 };
 
