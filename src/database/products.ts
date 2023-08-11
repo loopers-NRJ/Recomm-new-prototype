@@ -18,7 +18,12 @@ export const productItems = {
   buyerId: true,
   buyer: true,
   modelId: true,
-  model: true,
+  model: {
+    include: {
+      brand: true,
+      categories: true,
+    },
+  },
   ownerId: true,
   owner: true,
   createdAt: true,
@@ -105,7 +110,7 @@ export const createProduct = async ({
   price,
   description,
   pictures,
-  duration,
+  closedAt,
 }: CreateProductProps): Promise<Product | ServerError> => {
   const { error } = createProductValidator.validate({
     userId,
@@ -113,11 +118,19 @@ export const createProduct = async ({
     price,
     description,
     pictures,
-    duration,
+    closedAt,
   });
   if (error != null) {
     return new ServerError(error.message, 400);
   }
+  const endTimeDate = new Date(closedAt);
+  if (isNaN(endTimeDate.getTime())) {
+    return new ServerError("Invalid end time", 400);
+  }
+  if (endTimeDate.getTime() < Date.now()) {
+    return new ServerError("End time must be after the current time", 400);
+  }
+
   try {
     const model = await client.model.findUnique({
       where: {
@@ -145,7 +158,7 @@ export const createProduct = async ({
         pictures,
         room: {
           create: {
-            duration,
+            closedAt: endTimeDate,
           },
         },
       },
