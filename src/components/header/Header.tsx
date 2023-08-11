@@ -1,8 +1,9 @@
+import { type FC } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FiHome, FiUser, FiHeart, FiShoppingBag } from "react-icons/fi";
 
-export function Header(): React.JSX.Element {
+export const Header: FC = () => {
   return (
     <nav className="sticky top-0 flex p-2 w-full justify-center md:justify-between">
       <Image src="/recomm.svg" width={100} alt="logo" height={50} />
@@ -22,4 +23,4 @@ export function Header(): React.JSX.Element {
       </ul>
     </nav>
   );
-}
+};
