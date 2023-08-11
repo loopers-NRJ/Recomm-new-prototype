@@ -16,7 +16,7 @@ export const GET = async (request: Request): Promise<Response> => {
 };
 
 export const POST = async (request: Request): Promise<Response> => {
-  const { userId, modelId, price, pictures, description, endTime } =
+  const { userId, modelId, price, pictures, description, closedAt } =
     await request.json();
 
   const product = await Products.createProduct({
@@ -25,7 +25,7 @@ export const POST = async (request: Request): Promise<Response> => {
     price: +price,
     description,
     pictures,
-    endTime,
+    closedAt: +closedAt,
   });
   if (product instanceof ServerError) {
     const response = new Response(product.message, {
