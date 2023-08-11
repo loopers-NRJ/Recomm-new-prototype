@@ -56,7 +56,12 @@
         @apply border-border;
     }
 
-    body {
+    body { 
         @apply bg-background text-foreground;
     }
+}
+
+:root {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
 }

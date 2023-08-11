@@ -30,6 +30,14 @@ declare global {
     brand: Brand;
   }
 
+  interface Wish {
+    id: number;
+    category: string;
+    brand: string;
+    model: string;
+    status: "pending" | "available";
+  }
+
   interface FunctionalityOptions {
     search: string;
     sortOrder: SortOptions;
