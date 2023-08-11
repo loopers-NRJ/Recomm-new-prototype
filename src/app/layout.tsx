@@ -18,12 +18,12 @@ interface RootLayoutProps {
 const RootLayout: FC<RootLayoutProps> = ({ children }) => {
   return (
     <html lang="en">
-      <body className={`${inter.className} flex flex-col items-center p-4`}>
-        <Header />
-        {children}
-        <BottomNavigation />
-        <Footer />
-      </body>
+        <body className={`${inter.className} flex flex-col items-center`}>
+          <Header />
+          {children}
+          <BottomNavigation />
+          <Footer />
+        </body>
     </html>
   );
 };

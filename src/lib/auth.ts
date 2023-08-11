@@ -1,4 +1,6 @@
-import NextAuth, { type AuthOptions } from "next-auth";
+import client from "@/database/client";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import type { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
@@ -17,10 +19,10 @@ export const options: AuthOptions = {
       name: "Sign in with Google",
       clientId,
       clientSecret,
+      httpOptions: {
+        timeout: 20000,
+      },
     }),
   ],
+  adapter: PrismaAdapter(client),
 };
-
-const handler = NextAuth(options);
-
-export { handler as GET, handler as POST };

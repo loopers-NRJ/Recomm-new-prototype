@@ -1,5 +1,5 @@
-// import { getAdminByUserId } from "@/database/admin";
 import type { MiddlewareFactory } from "./types";
+// import { getAdminByUserId } from "@/database/admin";
 // import { NextResponse } from "next/server";
 const adminsOnlyRoutes: string[] = [
   // regex for routes that require admin authentication

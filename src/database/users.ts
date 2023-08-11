@@ -1,45 +1,7 @@
 import { type Product, type User } from "@prisma/client";
 import client, { matchError } from "./client";
 import { ServerError } from "@/lib/error";
-import {
-  type SignupProps,
-  signupValidator,
-  getProviderVarient,
-} from "@/validation/user";
 import { idValidator } from "@/validation/objectId";
-
-export const signup = async ({
-  email,
-  name,
-  provider: providerString,
-}: SignupProps): Promise<User | ServerError> => {
-  const { error } = signupValidator.validate({
-    email,
-    name,
-    provider: providerString,
-  });
-  if (error != null) {
-    return new ServerError(error.message, 400);
-  }
-  const provider = getProviderVarient(providerString);
-
-  try {
-    const user = await client.user.create({
-      data: {
-        email,
-        name,
-        provider,
-      },
-    });
-    return user;
-  } catch (error) {
-    return matchError(
-      error,
-      "User",
-      `Cannot create the user with email: ${email}`
-    );
-  }
-};
 
 export const searchUsers = async (
   query: string
@@ -94,7 +56,7 @@ export const getUserByEmail = async (
 export const getProductsByUser = async (
   userId: string
 ): Promise<Product[] | ServerError> => {
-  const { error } = idValidator.validate({ id: userId });
+  const { error } = idValidator.validate(userId);
   if (error != null) {
     return new ServerError(error.message, 400);
   }

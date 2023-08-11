@@ -1,8 +1,8 @@
-// import { getServerSession } from "next-auth";
 import type { MiddlewareFactory } from "./types";
-// import { options } from "@/app/api/auth/[...nextauth]";
+// import { options } from "@/lib/auth";
 // import { NextResponse } from "next/server";
 // import { getUserByEmail } from "@/database/users";
+// import { getServerSession } from "next-auth";
 
 const authenticatedUsersOnlyRoutes: string[] = [
   // regex for routes that require authentication
@@ -16,6 +16,7 @@ const withUserAuthentication: MiddlewareFactory =
       if (regex.test(path)) {
         // the route is in the list of routes that require authentication
         // validate if the user is authenticated
+        // TODO: cannot implement authorization because this line cause some error due to some bug in prisma
         // const session = await getServerSession(options);
         // if (session == null) {
         //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

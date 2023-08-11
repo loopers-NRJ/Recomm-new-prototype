@@ -1,10 +1,7 @@
-"use client";
-
-import { useTranslation } from "next-i18next";
+import { type FC } from "react";
 import Image from "next/image";
 import logo from "public/recomm.svg";
 import Link from "next/link";
-import React from "react";
 import { BsFacebook, BsLinkedin, BsTwitter, BsInstagram } from "react-icons/bs";
 import { type IconType } from "react-icons/lib";
 
@@ -15,40 +12,38 @@ const socialMedias: Array<[IconType, string]> = [
   [BsLinkedin, "https://linkedin.com"],
 ];
 
-export function Footer(): React.JSX.Element {
-  const { t } = useTranslation("footer");
-
+export const Footer: FC = () => {
   const footerLinks = [
     {
-      label: t("company"),
+      label: "company",
       links: [
-        [t("about"), "/about"],
-        [t("termOfUse"), "/term-of-use"],
-        [t("privacyPolicy"), "/privacy-policy"],
-        [t("howItWorks"), "/how-works"],
-        [t("contactUs"), "/contact-us"],
+        ["about", "/about"],
+        ["termOfUse", "/term-of-use"],
+        ["privacyPolicy", "/privacy-policy"],
+        ["howItWorks", "/how-works"],
+        ["contactUs", "/contact-us"],
       ],
     },
     {
-      label: t("support"),
+      label: "support",
       links: [
-        [t("supportCareer"), "/support"],
-        [t("service"), "/24-service"],
-        [t("quickChat"), "/quick-chat"],
+        ["supportCareer", "/support"],
+        ["service", "/24-service"],
+        ["quickChat", "/quick-chat"],
       ],
     },
     {
-      label: t("contact"),
+      label: "contact",
       links: [
-        [t("whatsapp"), "/whatsapp"],
-        [t("support"), "/24-service"],
+        ["whatsapp", "/whatsapp"],
+        ["support", "/24-service"],
       ],
     },
   ];
 
   return (
-    <footer className="w-full mb-16 bg-neutral-300 md:mb-0 hidden md:block">
-      <div className="mx-auto max-w-7xl px-4 py-10">
+    <footer className="w-full mb-16 p-10 bg-neutral-300 md:mb-0 hidden md:block">
+      <div className="mx-auto max-w-7xl">
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col md:flex-1">
             <Link href="/">
@@ -62,9 +57,9 @@ export function Footer(): React.JSX.Element {
               />
             </Link>
             <p className="py-4 text-sm font-normal text-neutral-500">
-              {t(
+              {
                 "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cumque harum optio inventore soluta reiciendis ullam fuga."
-              )}
+              }
             </p>
             <div className="my-5 flex justify-center md:justify-start">
               {socialMedias.map(([Icon, href]) => (
@@ -103,4 +98,4 @@ export function Footer(): React.JSX.Element {
       </div>
     </footer>
   );
-}
+};

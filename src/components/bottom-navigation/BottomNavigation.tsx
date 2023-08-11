@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslation } from "next-i18next";
 import { type IconType } from "react-icons";
 import { FiHome, FiUser, FiHeart, FiShoppingBag } from "react-icons/fi";
 
@@ -15,13 +14,11 @@ interface BottomTab {
 export function BottomNavigation(): React.JSX.Element {
   const currentPage = usePathname();
 
-  const { t } = useTranslation();
-
   const bottomTabs: BottomTab[] = [
-    { title: t("home"), url: "/", Icon: FiHome },
-    { title: t("wishlist"), url: "/wishlist", Icon: FiHeart },
-    { title: t("bids"), url: "/biddings", Icon: FiShoppingBag },
-    { title: t("profile"), url: "/signin", Icon: FiUser },
+    { title: "home", url: "/", Icon: FiHome },
+    { title: "wishlist", url: "/wishlist", Icon: FiHeart },
+    { title: "bids", url: "/biddings", Icon: FiShoppingBag },
+    { title: "profile", url: "/signin", Icon: FiUser },
   ];
 
   return (
@@ -33,9 +30,8 @@ export function BottomNavigation(): React.JSX.Element {
               <Link
                 href={tab.url}
                 className={
-                  currentPage === tab.url
-                    ? "flex h-full w-full flex-col items-center justify-center text-xs font-medium hover:text-violet-700 text-violet-700"
-                    : "flex h-full w-full flex-col items-center justify-center text-xs font-medium text-neutral-700 hover:text-violet-700"
+                  "flex h-full w-full flex-col items-center justify-center text-xs font-medium select-none bg-white transition-all duration-300" +
+                  (currentPage === tab.url ? "border border-t-4 border-black" : "")
                 }
               >
                 <tab.Icon size={"1.2rem"} />
