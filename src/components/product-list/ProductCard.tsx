@@ -4,7 +4,7 @@ import React, { type FC, useState, useEffect } from "react";
 import Image from "next/image";
 import UserImage from "@/assets/images/user-image.jpg";
 import ProductImage from "@/assets/images/car.jpeg";
-import { type Product } from "./ProductList";
+import { type Product } from "@/app/data";
 
 interface Props {
   product: Product;
@@ -60,28 +60,31 @@ export const ProductCard: FC<Props> = ({ product }) => {
   }, [days, hours, minutes, seconds]);
 
   return (
-    <div className="card relative shadow-md shadow-slate-300 overflow-hidden rounded-md min-h-[250px] max-w-xl hover:shadow-lg cursor-pointer">
+    <div className="card relative group shadow-md shadow-slate-300 overflow-hidden rounded-md min-h-[250px] max-w-xl hover:shadow-lg hover:shadow-slate-300 cursor-pointer">
       <Image
-        className="product-image -z-10 absolute top-0 left-0 h-32 object-cover w-full"
-        src={ProductImage}
-        alt="product-image"
-      />
-      <Image
-        className="user-image z-10 absolute top-2 right-2 w-10 rounded-full aspect-square object-cover"
+        className="user-image absolute top-2 right-2 w-10 rounded-full aspect-square object-cover"
         src={UserImage}
         alt="user-image"
       />
+      <Image
+        className="product-image h-32 group-hover:h-40 transition-all duration-500 object-cover w-full"
+        src={ProductImage}
+        alt="product-image"
+      />
 
-      <div className="details grid mt-32 p-3 bg-card h-full w-full">
-        <h1>
-          <span className="font-bold">Model Name:</span> {product.model.name}
-        </h1>
-        <h2>
-          <span className="font-bold">Brand:</span> {product.model.brand.name}
-        </h2>
-        <h3 className="truncate">
-          <span className="font-bold">Description:</span> {product.description}
-        </h3>
+      <div className="details grid p-3 bg-white w-full">
+        <p>
+          <span className="font-semibold text-xs uppercase">Model Name: </span>
+          <span className="font-normal text-sm">{product.model.name}</span>
+        </p>
+        <p>
+          <span className="font-semibold text-xs uppercase">Brand: </span>
+          <span className="font-normal text-sm">{product.model.brand.name}</span>
+        </p>
+        <p className="truncate">
+          <span className="font-semibold text-xs uppercase">Description: </span>
+          <span className="font-normal text-sm">{product.description}</span>
+        </p>
 
         <div className="countdown my-3">
           <h1 className="headings text-sm font-light text-center grid grid-flow-col grid-cols-4 gap-5">
@@ -92,18 +95,18 @@ export const ProductCard: FC<Props> = ({ product }) => {
           </h1>
           <h1 className="digits grid grid-flow-col grid-cols-4 gap-5 text-center text-2xl font-semibold">
             {/* display double digit number */}
-            <span className="bg-primary text-primary-foreground p-2 rounded-lg after:contents ">
+            <span className="bg-primary text-accent p-2 rounded-lg">
               {timeLeft.days < 10 ? `0${timeLeft.days}` : timeLeft.days}
             </span>
-            <span className="bg-primary text-primary-foreground p-2 rounded-lg">
+            <span className="bg-primary text-accent p-2 rounded-lg">
               {timeLeft.hours < 10 ? `0${timeLeft.hours}` : timeLeft.hours}
             </span>
-            <span className="bg-primary text-primary-foreground p-2 rounded-lg">
+            <span className="bg-primary text-accent p-2 rounded-lg">
               {timeLeft.minutes < 10
                 ? `0${timeLeft.minutes}`
                 : timeLeft.minutes}
             </span>
-            <span className="bg-primary text-primary-foreground p-2 rounded-lg">
+            <span className="bg-primary text-accent p-2 rounded-lg">
               {timeLeft.seconds < 10
                 ? `0${timeLeft.seconds}`
                 : timeLeft.seconds}

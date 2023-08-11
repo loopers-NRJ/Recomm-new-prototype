@@ -42,7 +42,7 @@ export const Footer: FC = () => {
   ];
 
   return (
-    <footer className="w-full mb-16 bg-neutral-300 md:mb-0 hidden md:block">
+    <footer className="w-full mb-16 p-10 bg-neutral-300 md:mb-0 hidden md:block">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col md:flex-row">
           <div className="flex flex-col md:flex-1">
