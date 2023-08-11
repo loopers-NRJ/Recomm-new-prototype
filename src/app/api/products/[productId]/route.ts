@@ -30,7 +30,7 @@ export const PUT = async (
 
   const model = await Products.updateProduct({
     id: productId,
-    price,
+    price: +price,
     description,
     pictures,
   });

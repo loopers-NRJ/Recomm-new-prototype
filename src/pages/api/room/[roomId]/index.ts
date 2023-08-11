@@ -1,26 +1,25 @@
 import { postABid } from "@/database/room";
 import { ServerError } from "@/lib/error";
-import type { NextRequest } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-async function handler(request: NextRequest): Promise<Response> {
-  // get params from request
+const handler = async (
+  request: NextApiRequest,
+  response: NextApiResponse
+): Promise<void> => {
   switch (request.method) {
     case "GET":
-      return await GET(request);
+      await GET(request, response);
+      break;
     case "POST":
-      return await POST(request);
+      await POST(request, response);
+      break;
     default:
-      return new Response("Method not allowed", {
-        status: 405,
-        headers: {
-          Allow: "GET, POST",
-        },
-      });
+      response.status(405).end();
   }
-}
+};
 
 interface connectedUser {
-  stream: TransformStream;
+  response: NextApiResponse;
   // add user details in the interface
   // user: User;
 }
@@ -28,53 +27,49 @@ const connectedUsers = new Set<connectedUser>();
 // TODO: for now this route allow any user to connect to any room
 // TODO: only allow authenticated users to connect to rooms
 
-export const GET = async (request: Request): Promise<Response> => {
-  const stream = new TransformStream();
-  const connectedUser = { stream };
+export const GET = async (
+  request: NextApiRequest,
+  response: NextApiResponse
+): Promise<void> => {
+  const connectedUser = { response };
   connectedUsers.add(connectedUser);
   console.log("client connected");
   console.log(connectedUsers.size);
-  return new Response(connectedUser.stream.readable, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      Connection: "keep-alive",
-      "Cache-Control": "no-cache, no-transform",
-    },
+
+  request.on("close", () => {
+    connectedUsers.delete(connectedUser);
+    console.log("client disconnected");
+    console.log(connectedUsers.size);
   });
+  response.setHeader("Content-Type", "text/event-stream");
+  response.setHeader("Connection", "keep-alive");
+  response.setHeader("Cache-Control", "no-cache");
+  response.flushHeaders();
 };
 
 const sendMessage = async (data: any, user: connectedUser): Promise<void> => {
   const encoder = new TextEncoder();
-
-  console.log("sending message");
-  const writer = user.stream.writable.getWriter();
-  await writer.ready;
-  console.log("writer ready");
-  await writer.write(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
-  console.log("message sent");
-  writer.releaseLock();
+  user.response.write(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
 };
-export const POST = async (request: NextRequest): Promise<Response> => {
+export const POST = async (
+  request: NextApiRequest,
+  response: NextApiResponse
+): Promise<void> => {
   // TODO: only allow authenticated users to connect to rooms
-  const params = new URL(request.nextUrl).searchParams;
-  const roomId = params.get("roomId") as string;
-  const { price, userId } = await request.json();
+  const roomId = request.query.roomId as string;
+  const { price, userId } = await request.body;
   const bid = await postABid({ roomId, price, userId });
   if (bid instanceof ServerError) {
-    const response = new Response(bid.message, {
-      status: bid.status,
-    });
-    return response;
+    response.status(bid.status).json(bid.message);
+    return;
   }
+
   connectedUsers.forEach((user) => {
-    sendMessage("bid", user).catch((error) => {
+    sendMessage(bid, user).catch((error) => {
       console.log(error);
     });
   });
-  return new Response("ok");
+  response.status(200).json(bid);
 };
-
-export const runtime = "edge";
-export const dynamic = "force-dynamic";
 
 export default handler;
