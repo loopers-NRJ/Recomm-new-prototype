@@ -1,9 +1,10 @@
 export const products = [
   {
-    id: "12345",
+    id: "123",
     createdAt: new Date("2023-08-10T10:00:00Z"),
     price: 499.99,
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus velit similique itaque consectetur a corrupti nostrum placeat.",
     pictures: ["pic1.jpg", "pic2.jpg", "pic3.jpg"],
     modelId: "6789",
     ownerId: "54321",
@@ -53,10 +54,11 @@ export const products = [
     },
   },
   {
-    id: "12345",
+    id: "456",
     createdAt: new Date("2023-08-10T10:00:00Z"),
     price: 499.99,
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description:
+      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus velit similique itaque consectetur a corrupti nostrum placeat.",
     pictures: ["pic1.jpg", "pic2.jpg", "pic3.jpg"],
     modelId: "6789",
     ownerId: "54321",
@@ -105,6 +107,15 @@ export const products = [
       updatedAt: new Date("2023-08-08T09:30:00Z"),
     },
   },
+];
+
+export const categories = [
+  "Mobiles",
+  "Laptops",
+  "Cameras",
+  "Headphones",
+  "Accessories",
+  "Others",
 ];
 
 export type Product = (typeof products)[0];

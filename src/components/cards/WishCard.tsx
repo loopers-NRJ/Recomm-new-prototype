@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardDescription,
@@ -21,9 +22,12 @@ export function WishCard({
             {brand} {model}
           </CardTitle>
           <CardDescription>{category}</CardDescription>
+          <Badge className="select-none text-[10px] leading-0 w-fit px-2" variant={status}>
+            {status}
+          </Badge>
         </CardHeader>
       </div>
-      <CardFooter className="p-6">
+      <CardFooter className="flex-col items-end gap-2 p-6">
         <Button disabled={status !== "available"}>View Products</Button>
       </CardFooter>
     </Card>
