@@ -21,7 +21,15 @@ export const productItems = {
   model: {
     include: {
       brand: true,
-      categories: true,
+      categories: {
+        select: {
+          id: true,
+          name: true,
+          picture: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
     },
   },
   ownerId: true,
@@ -30,11 +38,14 @@ export const productItems = {
   updatedAt: true,
 } as const;
 
-export type Product = Omit<OriginalProduct, "favoritedUserId">;
+export type ProductWithoutFavoritedUserId = Omit<
+  OriginalProduct,
+  "favoritedUserIds"
+>;
 
 export const getProduct = async (
   id: string
-): Promise<Product | ServerError> => {
+): Promise<ProductWithoutFavoritedUserId | ServerError> => {
   try {
     const { error } = idValidator.validate(id);
     if (error != null) {
@@ -63,7 +74,9 @@ export const getProducts = async ({
   sortBy,
   page,
   limit,
-}: FunctionalityOptions): Promise<Product[] | ServerError> => {
+}: FunctionalityOptions): Promise<
+  ProductWithoutFavoritedUserId[] | ServerError
+> => {
   try {
     const allProducts = await client.product.findMany({
       where: {
@@ -111,7 +124,9 @@ export const createProduct = async ({
   description,
   pictures,
   closedAt,
-}: CreateProductProps): Promise<Product | ServerError> => {
+}: CreateProductProps): Promise<
+  ProductWithoutFavoritedUserId | ServerError
+> => {
   const { error } = createProductValidator.validate({
     userId,
     modelId,
@@ -179,7 +194,9 @@ export const updateProduct = async ({
   price,
   pictures,
   description,
-}: UpdateProductProps): Promise<Product | ServerError> => {
+}: UpdateProductProps): Promise<
+  ProductWithoutFavoritedUserId | ServerError
+> => {
   const { error } = updateProductValidator.validate({ id, price, pictures });
   if (error != null) {
     return new ServerError(error.message, 400);
@@ -208,7 +225,7 @@ export const updateProduct = async ({
 
 export const deleteProduct = async (
   id: string
-): Promise<Product | ServerError> => {
+): Promise<ProductWithoutFavoritedUserId | ServerError> => {
   const { error } = idValidator.validate(id);
   if (error != null) {
     return new ServerError(error.message, 400);

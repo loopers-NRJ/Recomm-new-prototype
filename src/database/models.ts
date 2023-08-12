@@ -8,7 +8,7 @@ import {
   updateModelValidator,
 } from "@/validation/model";
 import { idValidator } from "@/validation/objectId";
-import { type Product, productItems } from "./products";
+import { type ProductWithoutFavoritedUserId, productItems } from "./products";
 
 export const getModel = async (id: string): Promise<Model | ServerError> => {
   const { error } = idValidator.validate(id);
@@ -179,7 +179,7 @@ export const deleteModel = async (id: string): Promise<Model | ServerError> => {
 export const getProductsByModel = async (
   id: string,
   { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
-): Promise<Product[] | ServerError> => {
+): Promise<ProductWithoutFavoritedUserId[] | ServerError> => {
   const { error } = idValidator.validate(id);
   if (error != null) {
     return new ServerError(error.message, 400);

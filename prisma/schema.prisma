@@ -100,21 +100,21 @@ model Category {
 }
 
 model Product {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  price           Float
-  description     String
-  pictures        String[]
-  model           Model    @relation(fields: [modelId], references: [id])
-  modelId         String   @db.ObjectId
-  owner           User     @relation("listedProducts", fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId         String   @db.ObjectId
-  buyer           User?    @relation("purchasedProducts", fields: [buyerId], references: [id])
-  buyerId         String?  @db.ObjectId
-  room            Room?
-  favoritedUser   User[]   @relation(name: "favorites", fields: [favoritedUserId], references: [id])
-  favoritedUserId String[] @db.ObjectId
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  price            Float
+  description      String
+  pictures         String[]
+  model            Model    @relation(fields: [modelId], references: [id])
+  modelId          String   @db.ObjectId
+  owner            User     @relation("listedProducts", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId          String   @db.ObjectId
+  buyer            User?    @relation("purchasedProducts", fields: [buyerId], references: [id])
+  buyerId          String?  @db.ObjectId
+  room             Room?
+  favoritedUsers   User[]   @relation(name: "favorites", fields: [favoritedUserIds], references: [id])
+  favoritedUserIds String[] @map("favoritedUserId") @db.ObjectId
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model Room {

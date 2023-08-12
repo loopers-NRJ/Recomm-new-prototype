@@ -7,8 +7,15 @@ const parseOptions = (url: string): FunctionalityOptions => {
   const search = query.get("search") ?? "";
   const sortOrder = (query.get("sortOrder") as SortOptions) ?? "asc";
   const sortBy = (query.get("sortBy") as SortByOptions) ?? "name";
-  const page = +(query.get("page") ?? DEFAULTPAGE);
-  const limit = +(query.get("limit") ?? DEFAULTLIMIT);
+  let page = +(query.get("page") ?? DEFAULTPAGE);
+  let limit = +(query.get("limit") ?? DEFAULTLIMIT);
+
+  if (page < 1 || page > DEFAULTPAGE) {
+    page = DEFAULTPAGE;
+  }
+  if (limit < 1 || limit > DEFAULTLIMIT) {
+    limit = DEFAULTLIMIT;
+  }
 
   return {
     search,
