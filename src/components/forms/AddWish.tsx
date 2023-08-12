@@ -12,10 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function AddWish(): JSX.Element {
-  return (
+  return (  
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="md:w-full max-w-lg px-28">
+        <Button variant="default" className="md:w-full max-w-lg my-6 px-28 py-6">
           Add Product Wish
         </Button>
       </DialogTrigger>
