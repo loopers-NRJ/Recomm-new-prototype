@@ -8,7 +8,7 @@ import {
   updateCategoryValidator,
   createCategoryValidator,
 } from "@/validation/category";
-import { type Product, productItems } from "./products";
+import { type ProductWithoutFavoritedUserId, productItems } from "./products";
 
 export const getCategory = async (
   id: string
@@ -219,7 +219,7 @@ export const getBrandsByCategory = async (
 export const getProductsByCategory = async (
   id: string,
   { search, sortOrder, sortBy, page, limit }: FunctionalityOptions
-): Promise<Product[] | ServerError> => {
+): Promise<ProductWithoutFavoritedUserId[] | ServerError> => {
   const { error } = idValidator.validate(id);
   if (error != null) {
     return new ServerError(error.message, 400);
