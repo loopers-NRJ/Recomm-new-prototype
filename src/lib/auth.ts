@@ -24,5 +24,9 @@ export const options: AuthOptions = {
       },
     }),
   ],
+  // pages: {
+  //   signIn: "/signin",
+  //   error: "/signin",
+  // },
   adapter: PrismaAdapter(client),
 };

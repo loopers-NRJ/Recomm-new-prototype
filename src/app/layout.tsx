@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { type FC } from "react";
 import { Header, Footer, BottomNavigation } from "@/components";
+import Provider from "@/components/provider/Provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,10 +22,12 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
       <body
         className={`${inter.className} flex flex-col h-screen items-center`}
       >
-        <Header />
-        {children}
-        <BottomNavigation />
-        <Footer />
+        <Provider>
+          <Header />
+          {children}
+          <BottomNavigation />
+          <Footer />
+        </Provider>
       </body>
     </html>
   );
