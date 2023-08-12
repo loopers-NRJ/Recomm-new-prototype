@@ -55,6 +55,7 @@ const Home: FC = async () => {
         <div className="search-bar flex gap-3">
           <Input
             type="search"
+            inputMode="search"
             placeholder="Search..."
             className="md:w-[100px] lg:w-[300px]"
           />
